@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DonwloaderspeedF1 | MP4 & MP3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        f1red: '#EF4444',
+                        f1dark: '#B91C1C',
+                        darkBg: '#0F172A',
+                        cardBg: '#1E293B'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .gradient-f1 { background: linear-gradient(135deg, #EF4444, #B91C1C); }
+        .gradient-gold { background: linear-gradient(135deg, #F59E0B, #D97706); }
+        .animate-spin-slow { animation: spin 2s linear infinite; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col">
+
+    <!-- HEADER -->
+    <header class="w-full border-b border-slate-800 bg-darkBg/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-f1red/20 text-f1red p-2 rounded-lg border border-f1red/30">
+                    <i class="fa-solid fa-flag-checkered text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg">DonwloaderspeedF1</h1>
+                    <span class="text-xs text-slate-400">MP4 & MP3 Downloader</span>
+                </div>
+            </div>
+            
+            <!-- Switch de idioma -->
+            <div class="flex items-center bg-slate-800 p-1 rounded-full border border-slate-700">
+                <button id="btn-es" onclick="setLanguage('es')" class="px-3 py-1 text-xs font-semibold rounded-full bg-f1red text-white">ES</button>
+                <button id="btn-en" onclick="setLanguage('en')" class="px-3 py-1 text-xs font-semibold rounded-full text-slate-400 hover:text-white">EN</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="max-w-3xl mx-auto px-4 py-10 flex-grow w-full">
+        
+        <!-- Hero -->
+        <div class="text-center mb-8">
+            <h2 id="txt-title" class="text-3xl sm:text-4xl font-extrabold mb-2">Descarga a máxima velocidad 🏎️</h2>
+            <p id="txt-subtitle" class="text-slate-400 text-sm sm:text-base">Sin frenos. Sin registro. 100% gratis.</p>
+        </div>
+
+        <!-- Card principal -->
+        <div class="bg-cardBg border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
+            
+            <!-- Input URL -->
+            <div class="mb-6">
+                <label id="lbl-url" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Enlace del video</label>
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"><i class="fa-solid fa-link"></i></span>
+                    <input type="url" id="video-url" placeholder="https://www.youtube.com/watch?v=..." 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl py-3.5 pl-12 pr-4 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-f1red focus:ring-2 focus:ring-f1red/20 transition-all">
+                </div>
+            </div>
+
+            <!-- Formato -->
+            <div class="mb-6">
+                <label id="lbl-format" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Formato</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="format" value="mp4" checked class="peer sr-only">
+                        <div class="flex items-center justify-center space-x-2 p-4 bg-slate-900 border border-slate-700 rounded-xl peer-checked:border-f1red peer-checked:bg-f1red/10 peer-checked:text-f1red transition-all hover:border-slate-600">
+                            <i class="fa-solid fa-video text-lg"></i>
+                            <span class="font-semibold text-sm" id="lbl-mp4">Video (MP4)</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="format" value="mp3" class="peer sr-only">
+                        <div class="flex items-center justify-center space-x-2 p-4 bg-slate-900 border border-slate-700 rounded-xl peer-checked:border-f1red peer-checked:bg-f1red/10 peer-checked:text-f1red transition-all hover:border-slate-600">
+                            <i class="fa-solid fa-music text-lg"></i>
+                            <span class="font-semibold text-sm" id="lbl-mp3">Audio (MP3)</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Botón principal -->
+            <button onclick="handleDownload()" id="btn-download" 
+                class="w-full gradient-f1 hover:opacity-90 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-red-500/20 transition-all flex items-center justify-center space-x-2 uppercase tracking-wider">
+                <i class="fa-solid fa-download"></i>
+                <span id="txt-btn">Iniciar Descarga Rápida</span>
+            </button>
+
+            <!-- Estado / Progreso -->
+            <div id="status-container" class="hidden mt-6 fade-in">
+                <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-4 text-center">
+                    <div class="flex items-center justify-center space-x-3 text-sm text-f1red mb-3">
+                        <span id="status-icon"><i class="fa-solid fa-circle-notch fa-spin"></i></span>
+                        <span id="status-text" class="font-medium">Procesando...</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="bg-f1red h-full w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zona de descarga monetizada -->
+            <div id="download-zone" class="hidden mt-6 fade-in space-y-4">
+                
+                <!-- Caja de info -->
+                <div class="bg-cardBg border border-slate-700 rounded-xl p-4 text-center">
+                    <h3 id="step1-title" class="text-lg font-bold text-white mb-1">✅ Archivo listo</h3>
+                    <p id="step1-desc" class="text-sm text-slate-400">Completa un paso de verificación para descargar.</p>
+                </div>
+
+                <!-- Botón Monetag -->
+                <a href="https://uplcm.com/4/9616671" target="_blank" rel="noopener noreferrer"
+                    class="block gradient-gold hover:opacity-90 text-white text-center font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-amber-500/20 transition-all">
+                    <i class="fa-solid fa-shield-halved mr-2"></i>
+                    <span id="txt-monetag">Paso 1: Verificar y apoyar (Nueva pestaña)</span>
+                </a>
+
+                <!-- Botón descarga real -->
+                <div class="text-center">
+                    <p id="step2-desc" class="text-sm text-slate-400 mb-3">¿Ya verificaste? Tu archivo está aquí 👇</p>
+                    <a id="final-download-link" href="#" target="_blank"
+                        class="inline-flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-green-500/20">
+                        <i class="fa-solid fa-file-arrow-down"></i>
+                        <span id="txt-download">Paso 2: Descargar archivo</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Error -->
+            <div id="error-container" class="hidden mt-6 bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-center fade-in">
+                <p class="text-red-400 text-sm font-medium" id="error-text">❌ Error al procesar el video.</p>
+                <p class="text-slate-500 text-xs mt-2" id="error-hint">💡 Prueba con otro video o espera unos minutos.</p>
+            </div>
+
+        </div>
+
+        <!-- Info SEO -->
+        <div class="mt-10 text-center text-slate-500 text-xs space-y-2">
+            <p id="txt-features">⚡ Rápido • 🎬 MP4 y MP3 • 🌍 Multi-idioma • 💯 Gratis</p>
+            <p id="txt-footer">DonwloaderspeedF1 © 2026</p>
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        //  TRADUCCIONES
+        // ==========================================
+        const translations = {
+            es: {
+                title: "Descarga a máxima velocidad 🏎️",
+                subtitle: "Sin frenos. Sin registro. 100% gratis.",
+                lblUrl: "Enlace del video",
+                lblFormat: "Formato",
+                lblMp4: "Video (MP4)",
+                lblMp3: "Audio (MP3)",
+                btnText: "Iniciar Descarga Rápida",
+                btnProcessing: "Procesando...",
+                statusProcess: "Conectando con el servidor...",
+                statusConverting: "Procesando archivo...",
+                statusReady: "¡Archivo listo!",
+                step1Title: "✅ Archivo listo",
+                step1Desc: "Completa un paso de verificación para descargar.",
+                txtMonetag: "Paso 1: Verificar y apoyar (Nueva pestaña)",
+                step2Desc: "¿Ya verificaste? Tu archivo está aquí 👇",
+                txtDownload: "Paso 2: Descargar archivo",
+                errorText: "❌ Error al procesar el video.",
+                errorHint: " Prueba con otro video o espera unos minutos.",
+                features: "⚡ Rápido • 🎬 MP4 y MP3 • 🌍 Multi-idioma • 💯 Gratis",
+                footer: "DonwloaderspeedF1 © 2026",
+                alertUrl: "Por favor, ingresa un enlace válido."
+            },
+            en: {
+                title: "Download at maximum speed 🏎️",
+                subtitle: "No brakes. No signup. 100% free.",
+                lblUrl: "Video link",
+                lblFormat: "Format",
+                lblMp4: "Video (MP4)",
+                lblMp3: "Audio (MP3)",
+                btnText: "Start Fast Download",
+                btnProcessing: "Processing...",
+                statusProcess: "Connecting to server...",
+                statusConverting: "Processing file...",
+                statusReady: "File ready!",
+                step1Title: "✅ File ready",
+                step1Desc: "Complete a verification step to download.",
+                txtMonetag: "Step 1: Verify & support (New tab)",
+                step2Desc: "Already verified? Your file is here 👇",
+                txtDownload: "Step 2: Download file",
+                errorText: "❌ Error processing the video.",
+                errorHint: "💡 Try another video or wait a few minutes.",
+                features: "⚡ Fast •  MP4 & MP3 • 🌍 Multi-language • 💯 Free",
+                footer: "DonwloaderspeedF1 © 2026",
+                alertUrl: "Please enter a valid link."
+            }
+        };
+
+        let currentLang = 'es';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+
+            // Actualizar botones de idioma
+            document.getElementById('btn-es').className = lang === 'es' 
+                ? "px-3 py-1 text-xs font-semibold rounded-full bg-f1red text-white"
+                : "px-3 py-1 text-xs font-semibold rounded-full text-slate-400 hover:text-white";
+            document.getElementById('btn-en').className = lang === 'en'
+                ? "px-3 py-1 text-xs font-semibold rounded-full bg-f1red text-white"
+                : "px-3 py-1 text-xs font-semibold rounded-full text-slate-400 hover:text-white";
+
+            document.documentElement.lang = lang;
+            document.getElementById('txt-title').innerText = t.title;
+            document.getElementById('txt-subtitle').innerText = t.subtitle;
+            document.getElementById('lbl-url').innerText = t.lblUrl;
+            document.getElementById('lbl-format').innerText = t.lblFormat;
+            document.getElementById('lbl-mp4').innerText = t.lblMp4;
+            document.getElementById('lbl-mp3').innerText = t.lblMp3;
+            document.getElementById('txt-btn').innerText = t.btnText;
+            document.getElementById('step1-title').innerText = t.step1Title;
+            document.getElementById('step1-desc').innerText = t.step1Desc;
+            document.getElementById('txt-monetag').innerText = t.txtMonetag;
+            document.getElementById('step2-desc').innerText = t.step2Desc;
+            document.getElementById('txt-download').innerText = t.txtDownload;
+            document.getElementById('error-text').innerText = t.errorText;
+            document.getElementById('error-hint').innerText = t.errorHint;
+            document.getElementById('txt-features').innerText = t.features;
+            document.getElementById('txt-footer').innerText = t.footer;
+        }
+
+        // ==========================================
+        // ️ LÓGICA DE DESCARGA CON COBALT API
+        // ==========================================
+        async function handleDownload() {
+            const urlInput = document.getElementById('video-url').value.trim();
+            const format = document.querySelector('input[name="format"]:checked').value;
+            const t = translations[currentLang];
+
+            if (!urlInput || !urlInput.startsWith('http')) {
+                alert(t.alertUrl);
+                return;
+            }
+
+            // Reset UI
+            document.getElementById('error-container').classList.add('hidden');
+            document.getElementById('download-zone').classList.add('hidden');
+            document.getElementById('status-container').classList.remove('hidden');
+            
+            const btn = document.getElementById('btn-download');
+            const btnText = document.getElementById('txt-btn');
+            const statusText = document.getElementById('status-text');
+            const progressBar = document.getElementById('progress-bar');
+
+            btn.disabled = true;
+            btnText.innerText = t.btnProcessing;
+            statusText.innerText = t.statusProcess;
+            progressBar.style.width = '20%';
+
+            try {
+                // ==========================================
+                // LLAMADA A COBALT API
+                // ==========================================
+                const isAudio = format === 'mp3';
+                
+                const apiResponse = await fetch('https://api.cobalt.tools/api/json', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: urlInput,
+                        vQuality: '720',
+                        aFormat: 'mp3',
+                        isAudioOnly: isAudio,
+                        filenamePattern: 'basic'
+                    })
+                });
+
+                progressBar.style.width = '60%';
+                statusText.innerText = t.statusConverting;
+
+                if (!apiResponse.ok) {
+                    throw new Error(`API error: ${apiResponse.status}`);
+                }
+
+                const data = await apiResponse.json();
+                
+                progressBar.style.width = '90%';
+
+                // Manejar respuesta de Cobalt
+                let downloadUrl = null;
+                
+                if (data.status === 'stream' || data.status === 'redirect') {
+                    downloadUrl = data.url;
+                } else if (data.status === 'picker' && data.picker && data.picker.length > 0) {
+                    // Para videos con múltiples opciones
+                    downloadUrl = data.picker[0].url;
+                } else if (data.status === 'error') {
+                    throw new Error(data.text || 'Unknown error');
+                }
+
+                if (!downloadUrl) {
+                    throw new Error('No download URL received');
+                }
+
+                // Éxito
+                progressBar.style.width = '100%';
+                statusText.innerText = t.statusReady;
+                document.getElementById('status-icon').innerHTML = '<i class="fa-solid fa-check text-green-400"></i>';
+
+                // Mostrar zona de descarga monetizada
+                setTimeout(() => {
+                    document.getElementById('status-container').classList.add('hidden');
+                    document.getElementById('download-zone').classList.remove('hidden');
+                    
+                    const finalLink = document.getElementById('final-download-link');
+                    finalLink.href = downloadUrl;
+                    finalLink.download = `donwloaderspeedf1.${format}`;
+                }, 500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('status-container').classList.add('hidden');
+                document.getElementById('error-container').classList.remove('hidden');
+                document.getElementById('error-text').innerText = `❌ ${error.message}`;
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = t.btnText;
+            }
+        }
+
+        // Enter key support
+        document.getElementById('video-url').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleDownload();
+        });
+    </script>
+</body>
+</html>
